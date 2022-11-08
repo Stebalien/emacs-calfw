@@ -95,8 +95,8 @@ For example,
       (when (buffer-live-p org-agenda-buffer)
         org-agenda-buffer))
     (org-compile-prefix-format nil)
-    (loop for date in (cfw:enumerate-days begin end) append
-          (loop for file in (or cfw:org-icalendars (org-agenda-files nil 'ifmode))
+    (cl-loop for date in (cfw:enumerate-days begin end) append
+          (cl-loop for file in (or cfw:org-icalendars (org-agenda-files nil 'ifmode))
                 append
                 (progn
                   (org-check-agenda-file file)
@@ -114,7 +114,7 @@ For example,
     (beg    (get-text-property (point) 'cfw:org-h-beg))
     (loc    (get-text-property (point) 'cfw:org-loc)))
     (when link
-      (org-open-link-from-string link))
+      (org-link-open-from-string link))
     (when (and marker (marker-buffer marker))
       (org-mark-ring-push)
       (switch-to-buffer (marker-buffer marker))
@@ -132,6 +132,7 @@ For example,
   (interactive)
   (let ((loc    (get-text-property (point) 'cfw:org-loc)))
     (when loc
+    ;; FIXME: Figure out how to use OpenStreet instead
       (google-maps loc))))
 
 (defun cfw:org-clean-exit ()
@@ -189,8 +190,8 @@ For example,
     ;;; act for org link
     ;;; ------------------------------------------------------------------------
     (setq text (replace-regexp-in-string "%[0-9A-F]\\{2\\}" " " text))
-    (if (string-match org-bracket-link-regexp text)
-      (let* ((desc (if (match-end 3) (org-match-string-no-properties 3 text)))
+    (if (string-match org-link-bracket-re text)
+      (let* ((desc (if (match-end 3) (match-string-no-properties 3 text)))
              (link (org-link-unescape (org-match-string-no-properties 1 text)))
              (help (concat "LINK: " link))
              (link-props (list
@@ -250,7 +251,7 @@ If TEXT does not have a range, return nil."
 (defun cfw:org-schedule-period-to-calendar (begin end)
   "[internal] Return calfw calendar items between BEGIN and END
 from the org schedule data."
-  (loop
+  (cl-loop
    with cfw:org-todo-keywords-regexp = (regexp-opt org-todo-keywords-for-agenda) ; dynamic bind
    with contents = nil with periods = nil
    for i in (cfw:org-collect-schedules-period begin end)
@@ -354,7 +355,7 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
                                             (lambda (hl)
                                               (org-element-property :scheduled hl) ) ) 'timestamp
                            (lambda (hl) (org-element-property :begin hl) )))))
-        (loop for pos in pos-lst
+        (cl-loop for pos in pos-lst
               do (goto-char pos)
               for t-obj =  (org-element-timestamp-parser)
               for h-obj = (progn
@@ -371,16 +372,16 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
               ;; (message "calfw-org: Cannot handle event")
               finally
               (kill-buffer (get-file-buffer file))
-              (return `((periods ,periods) ,@contents)))))))
+              (cl-return `((periods ,periods) ,@contents)))))))
 
 (defun cfw:org-to-calendar (file begin end)
-  (loop for event in (cfw:org-convert-org-to-calfw file)
+  (cl-loop for event in (cfw:org-convert-org-to-calfw file)
         if (and (listp event)
                 (equal 'periods (car event)))
         collect
         (cons
          'periods
-         (loop for evt in (cadr event)
+         (cl-loop for evt in (cadr event)
                if (and
                    (cfw:date-less-equal-p begin (cfw:event-end-date evt))
                    (cfw:date-less-equal-p (cfw:event-start-date evt) end))
@@ -482,6 +483,7 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
          (m (calendar-extract-month mdy))
          (d (calendar-extract-day   mdy))
          (y (calendar-extract-year  mdy)))
+    ;; FIXME: Delete if no use is found
     ;; exec org-remember here?
     ))
 
