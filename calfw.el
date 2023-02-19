@@ -1370,11 +1370,12 @@ sides with the character PADDING."
   "[internal] Sort the string list LST. Maybe need to improve the sorting rule..."
   (sort (copy-sequence lst) sorter))
 
-(defun cfw:render-get-face-period (text default-face)
+(defun cfw:render-get-face-period (text default-face &optional color)
   "[internal] Return a face for the source object of the period text."
   (let* ((src (get-text-property 0 'cfw:source text))
-         (bg-color (and src (cfw:source-period-bgcolor-get src)))
+         (bg-color (or color (cfw:source-period-bgcolor-get src))) ;; added optional color here
          (fg-color (and src (cfw:source-period-fgcolor-get src))))
+      (message color)
     (cond
      ((or (null src) (null bg-color)) default-face)
      (t (append (list ':background bg-color ':foreground fg-color)
@@ -1507,7 +1508,10 @@ PREV-CMD and NEXT-CMD are the moving view command, such as `cfw:navi-previous(ne
 
 (defun cfw:render-periods (date week-day periods-stack cell-width)
   "[internal] This function translates PERIOD-STACK to display content on the DATE."
-  (cl-loop with prev-row = -1
+  ;; (setq ncolors (length (defined-colors)))
+  ;; (setq random-color (nth (random ncolors) (defined-colors)))
+    (setq org-entries-defined-colors '( "orange" "green" "blue" "light sea green" "skyblue" "SeaGreen2" "ping" "salmon" "royal blue" "yellow" "violet" "Seagreen" "DarkOrange" "SpringGreen" "DeepSkyBlue" "DarkMagenta"))
+    (cl-loop with prev-row = -1
         for (row (begin end content props)) in (sort periods-stack
                                                      (lambda (a b)
                                                        (< (car a) (car b))))
@@ -1519,12 +1523,17 @@ PREV-CMD and NEXT-CMD are the moving view command, such as `cfw:navi-previous(ne
         for inwidth  = (- cell-width (if beginp 1 0) (if endp 1 0))
         for title  = (cfw:render-periods-title
                       date week-day begin end content cell-width inwidth)
+        ;; for colorid from 10 to 20
+        for length-text = (string-bytes content)
+        for length-defined-colors = (length org-entries-defined-colors)
+        for scaled-color-id = (ceiling (* (/ length-text max-length-text) length-defined-colors))
+        for color = (nth scaled-color-id org-entries-defined-colors)
         collect
         (apply 'propertize
                (concat (when beginp cfw:fstring-period-start)
                        (cfw:render-left inwidth title ?-)
                        (when endp cfw:fstring-period-end))
-               'face (cfw:render-get-face-period content 'cfw:face-periods)
+               'face (cfw:render-get-face-period content 'cfw:face-periods color)
                'font-lock-face (cfw:render-get-face-period content 'cfw:face-periods)
                'cfw:period t
                props)))
