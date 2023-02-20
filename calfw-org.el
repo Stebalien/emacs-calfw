@@ -459,6 +459,7 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
   (make-cfw:source
    :name "org-agenda"
    :color (or color cfw:org-face-agenda-item-foreground-color)
+   :opt-period-face '(:slant italic)
    :data 'cfw:org-schedule-period-to-calendar))
 
 (defun cfw:open-org-calendar ()

@@ -1375,7 +1375,6 @@ sides with the character PADDING."
   (let* ((src (get-text-property 0 'cfw:source text))
          (bg-color (or color (cfw:source-period-bgcolor-get src))) ;; added optional color here
          (fg-color (and src (cfw:source-period-fgcolor-get src))))
-      (message color)
     (cond
      ((or (null src) (null bg-color)) default-face)
      (t (append (list ':background bg-color ':foreground fg-color)
@@ -1508,9 +1507,8 @@ PREV-CMD and NEXT-CMD are the moving view command, such as `cfw:navi-previous(ne
 
 (defun cfw:render-periods (date week-day periods-stack cell-width)
   "[internal] This function translates PERIOD-STACK to display content on the DATE."
-  ;; (setq ncolors (length (defined-colors)))
-  ;; (setq random-color (nth (random ncolors) (defined-colors)))
-    (setq org-entries-defined-colors '( "orange" "green" "blue" "light sea green" "skyblue" "SeaGreen2" "ping" "salmon" "royal blue" "yellow" "violet" "Seagreen" "DarkOrange" "SpringGreen" "DeepSkyBlue" "DarkMagenta"))
+    (setq org-entries-defined-colors '( "cyan" "MediumVioletRed" "orange" "green" "blue" "tomato" "SeaGreen2" "pink" "salmon" "royal blue" "yellow" "violet" "PaleGreen" "DarkOrange" "light sea green" "SpringGreen" "white" "DarkMagenta" "goldenrod" "peru" ))
+    (setq max-length-text 50.0)
     (cl-loop with prev-row = -1
         for (row (begin end content props)) in (sort periods-stack
                                                      (lambda (a b)
@@ -1520,14 +1518,15 @@ PREV-CMD and NEXT-CMD are the moving view command, such as `cfw:navi-previous(ne
 
         for beginp = (equal date begin)
         for endp   = (equal date end)
-        for inwidth  = (- cell-width (if beginp 1 0) (if endp 1 0))
+        for inwidth  = (- cell-width (if beginp 1 0) (if endp 1 0)) ; One less character to use if starting/finishing
         for title  = (cfw:render-periods-title
                       date week-day begin end content cell-width inwidth)
-        ;; for colorid from 10 to 20
+        ;; color
         for length-text = (string-bytes content)
         for length-defined-colors = (length org-entries-defined-colors)
         for scaled-color-id = (ceiling (* (/ length-text max-length-text) length-defined-colors))
         for color = (nth scaled-color-id org-entries-defined-colors)
+
         collect
         (apply 'propertize
                (concat (when beginp cfw:fstring-period-start)
@@ -1541,15 +1540,10 @@ PREV-CMD and NEXT-CMD are the moving view command, such as `cfw:navi-previous(ne
 (defun cfw:render-periods-title (date week-day begin end content cell-width inwidth)
   "[internal] Return a title string."
   (let* ((week-begin (cfw:date-after date (- week-day)))
-         (month-begin (cfw:date
-                       (calendar-extract-month date)
-                       1 (calendar-extract-year date)))
-         (title-begin-abs
-          (max
-           (calendar-absolute-from-gregorian begin)
-           (calendar-absolute-from-gregorian week-begin)))
-         (title-begin (calendar-gregorian-from-absolute title-begin-abs))
-         (num (- (calendar-absolute-from-gregorian date) title-begin-abs)))
+         (title-begin-abs (max (calendar-absolute-from-gregorian begin) (calendar-absolute-from-gregorian week-begin)))
+         (begin-abs (calendar-absolute-from-gregorian begin))
+         (date-abs (calendar-absolute-from-gregorian date))
+         (num (- date-abs begin-abs)))
     (when content
       (cl-loop with title = (substring content 0)
             for i from 0 below num
