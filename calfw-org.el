@@ -56,6 +56,11 @@
   :type
   '(list string string symbol (list symbol (choice file (const nil))) string))
 
+(defcustom cfw:org-calendar-default-view 'week
+  "default view, should be one of the following: month, two-weeks, week and day."
+  :group 'cfw-org
+  :type 'symbol)
+
 (defsubst cfw:org-tp (text prop)
   "[internal] Return text property at position 0."
   (get-text-property 0 prop text))
@@ -473,7 +478,7 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
     (let* ((source1 (cfw:org-create-source))
            (curr-keymap (if cfw:org-overwrite-default-keybinding cfw:org-custom-map cfw:org-schedule-map))
            (cp (cfw:create-calendar-component-buffer
-                :view 'month
+                :view cfw:org-calendar-default-view
                 :contents-sources (list source1)
                 :custom-map curr-keymap
                 :sorter 'cfw:org-schedule-sorter)))
