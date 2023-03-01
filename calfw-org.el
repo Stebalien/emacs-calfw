@@ -180,13 +180,17 @@ For example,
          (buffer (and marker (marker-buffer marker)))
          (text (cfw:org-extract-summary item))
          (props (cfw:extract-text-props item 'face 'keymap))
-         (extra (cfw:org-tp item 'extra)))
+         (extra (cfw:org-tp item 'extra))
+         (todo-state (cfw:org-tp item 'todo-state))
+         (have-done (string= todo-state "DONE")))
     (setq text (substring-no-properties text))
     (when (string-match (concat "^" org-deadline-string ".*") extra)
       (add-text-properties 0 (length text) (list 'face (org-agenda-deadline-face 1.0)) text))
     (if org-todo-keywords-for-agenda
       (when (string-match (concat "^[\t ]*\\<\\(" (mapconcat 'identity org-todo-keywords-for-agenda "\\|") "\\)\\>") text)
-        (add-text-properties (match-beginning 1) (match-end 1) (list 'face (org-get-todo-face (match-string 1 text))) text)))
+        (add-text-properties (match-beginning 1) (match-end 1) (list 'face (org-get-todo-face (match-string 1 text))) text)
+        (when have-done
+          (add-text-properties (match-end 1) (length text) (list 'face 'org-done) text))))
     ;;; ------------------------------------------------------------------------
     ;;; act for org link
     ;;; ------------------------------------------------------------------------
@@ -207,6 +211,8 @@ For example,
           (setq link (apply 'propertize link link-props))
           (setq text (replace-match link nil nil text)))))
     (when time-str
+      (when have-done
+        (add-text-properties 0 (length time-str) (list 'face 'org-done) time-str))
       (setq text (concat time-str text)))
     (propertize
      (apply 'propertize text props)
