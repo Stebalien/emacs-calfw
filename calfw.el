@@ -1209,7 +1209,7 @@ calling functions `:data' function."
             ,(cfw:event-end-date period)
             ,period))
          (t
-          (destructuring-bind (begin end . summaries) period
+          (cl-destructuring-bind (begin end . summaries) period
             (list begin end
                   (cfw:tp (if (listp summaries)
                               (mapconcat 'identity (cfw:flatten summaries) " ")
