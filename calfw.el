@@ -2793,7 +2793,7 @@ this function returns nil."
 
 ;; buffer
 
-(defun* cfw:open-calendar-buffer
+(cl-defun cfw:open-calendar-buffer
     (&key date buffer custom-map contents-sources annotation-sources view sorter)
   "Open a calendar buffer simply.
 DATE is initial focus date. If it is nil, today is selected
@@ -2807,7 +2807,7 @@ initially.  This function uses the function
                :annotation-sources annotation-sources :view view :sorter sorter)))
       (switch-to-buffer (cfw:cp-get-buffer cp)))))
 
-(defun* cfw:create-calendar-component-buffer
+(cl-defun cfw:create-calendar-component-buffer
   (&key date buffer custom-map contents-sources annotation-sources view sorter)
   "Return a calendar buffer with some customize parameters.
 
@@ -2828,7 +2828,7 @@ CUSTOM-MAP is the additional keymap that is added to default keymap `cfw:calenda
 
 ;; region
 
-(defun* cfw:create-calendar-component-region
+(cl-defun cfw:create-calendar-component-region
   (&key date width height keymap contents-sources annotation-sources view sorter)
   "Insert markers of the rendering destination at current point and display the calendar view.
 
@@ -2875,7 +2875,7 @@ If the text already has some keymap property, the text is skipped."
 
 ;; inline
 
-(defun* cfw:get-calendar-text
+(cl-defun cfw:get-calendar-text
   (width height &key date keymap contents-sources annotation-sources view sorter)
   "Return a text that is drew the calendar view.
 
