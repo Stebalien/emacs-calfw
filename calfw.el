@@ -1695,16 +1695,16 @@ algorithm defined at `cfw:render-line-breaker'."
          ((or (= c 13) (= c 10))
           (push (substring string lastpos i) ret)
           (setq lastpos (1+ i) curcol 0)
-          (incf linenum))
+          (cl-incf linenum))
          ((= line-width wsum)
           (push (substring string lastpos (1+ i)) ret)
           (setq lastpos (1+ i) curcol 0)
-          (incf linenum))
+          (cl-incf linenum))
          ((< line-width wsum)
           (push (substring string lastpos i) ret)
           (setq lastpos i curcol w)
-          (incf linenum))
-         (t (incf curcol w)))
+          (cl-incf linenum))
+         (t (cl-incf curcol w)))
         finally return (or (and ret (nreverse ret)) '(""))))
 
 (defun cfw:render-line-breaker-wordwrap (string line-width max-line-num)
@@ -1779,7 +1779,7 @@ algorithm defined at `cfw:render-line-breaker'."
         collect
         (prog1
             (cfw:tp line 'cfw:row-count i)
-          (if (< 0 (length line)) (incf i)))))
+          (if (< 0 (length line)) (cl-incf i)))))
 
 (defun cfw:render-map-event-content (lst event-fun)
   "[internal] `lst' is a list of contents and `cfw:event's. Map over `lst',
@@ -1820,7 +1820,7 @@ where `event-fun' is applied if the element is a `cfw:event'."
           (when (and (= day calendar-week-start-day) week)
             (push (nreverse week) weeks)
             (setq week nil)
-            (when (cfw:date-less-equal-p end-date i) (return)))
+            (when (cfw:date-less-equal-p end-date i) (cl-return)))
           ;; add a day
           (push i week)
           ;; increment
@@ -2326,7 +2326,7 @@ found in the current view, return nil."
         for text-date = (and next (cfw:cursor-to-date next))
         while (and next (< next end)) do
         (if (and text-date (equal date text-date))
-            (return next))
+            (cl-return next))
         (setq pos next)))
 
 (defun cfw:find-all-by-date (dest date func)
@@ -2695,7 +2695,7 @@ DATE is a date to show. MODEL is model object."
                          (concat (cfw:strtime begin) " - " (cfw:strtime end) " : ")
                          'face (cfw:render-get-face-period summary 'cfw:face-periods)
                          'font-lock-face (cfw:render-get-face-period summary 'cfw:face-periods)
-                         'cfw:row-count (incf row-count))
+                         'cfw:row-count (cl-incf row-count))
            concat
            (concat prefix " " summary EOL))
 
@@ -2704,7 +2704,7 @@ DATE is a date to show. MODEL is model object."
            concat
            (concat "- " (propertize
                          i 'face f 'font-lock-face f
-                         'cfw:row-count (incf row-count))
+                         'cfw:row-count (cl-incf row-count))
                    EOL)))))
 
 (defvar cfw:details-mode-map
