@@ -55,6 +55,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'calendar)
 (require 'holidays)
 (require 'format-spec)
@@ -345,7 +346,8 @@ for example `cfw:read-date-command-simple' or `cfw:org-read-date-command'."
 
 (defun cfw:extract-text-props (text &rest excludes)
   "[internal] Return text properties."
-  (cl-loop with ret = nil
+    (cl-loop
+        with ret = nil
         with props = (text-properties-at 0 text)
         for name = (car props)
         for val = (cadr props)
@@ -374,14 +376,6 @@ KEYMAP-LIST is a source list like ((key . command) ... )."
   (if (string-match "^[ \t\n\r]*\\(.*?\\)[ \t\n\r]*$" str)
       (match-string 1 str)
     str))
-
-(defun cfw:flatten (lst &optional revp)
-  (cl-loop with ret = nil
-        for i in lst
-        do (setq ret (if (consp i)
-                         (nconc (cfw:flatten i t) ret)
-                       (cons i ret)))
-        finally return (if revp ret (nreverse ret))))
 
 
 
@@ -1212,9 +1206,10 @@ calling functions `:data' function."
           (cl-destructuring-bind (begin end . summaries) period
             (list begin end
                   (cfw:tp (if (listp summaries)
-                              (mapconcat 'identity (cfw:flatten summaries) " ")
-                            summaries)
-                          'cfw:source source)))))))
+                              (mapconcat 'identity (flatten-tree summaries) " ")
+                              summaries)
+                      'cfw:source source)))
+             ))))
 
 (defun cfw:contents-put-source (contents source)
   "[internal] Put the source object to the text property
