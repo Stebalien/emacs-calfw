@@ -121,7 +121,7 @@ For example,
     (beg    (get-text-property (point) 'cfw:org-h-beg))
     (loc    (get-text-property (point) 'cfw:org-loc)))
     (when link
-      (org-open-link-from-string link))
+      (org-link-open-from-string link))
     (when (and marker (marker-buffer marker))
       (org-mark-ring-push)
       (switch-to-buffer (marker-buffer marker))
@@ -139,6 +139,7 @@ For example,
   (interactive)
   (let ((loc    (get-text-property (point) 'cfw:org-loc)))
     (when loc
+    ;; FIXME: Figure out how to use OpenStreet instead
       (google-maps loc))))
 
 (defun cfw:org-clean-exit ()
@@ -200,8 +201,8 @@ For example,
     ;;; act for org link
     ;;; ------------------------------------------------------------------------
     (setq text (replace-regexp-in-string "%[0-9A-F]\\{2\\}" " " text))
-    (if (string-match org-bracket-link-regexp text)
-      (let* ((desc (if (match-end 3) (org-match-string-no-properties 3 text)))
+    (if (string-match org-link-bracket-re text)
+      (let* ((desc (if (match-end 3) (match-string-no-properties 3 text)))
              (link (org-link-unescape (org-match-string-no-properties 1 text)))
              (help (concat "LINK: " link))
              (link-props (list
@@ -244,19 +245,21 @@ If this function splits into a list of string, the calfw displays those string i
 If TEXT does not have a range, return nil."
   (let* ((dotime (cfw:org-tp text 'dotime)))
     (and (stringp dotime) (string-match org-ts-regexp dotime)
-	 (let* ((matches  (s-match-strings-all org-ts-regexp dotime))
-           (start-date (nth 1 (car matches)))
-           (end-date (nth 1 (nth 1 matches)))
-	       (extra (cfw:org-tp text 'extra)))
-	   (if (string-match "(\\([0-9]+\\)/\\([0-9]+\\)): " extra)
-       ( list( calendar-gregorian-from-absolute
-       (time-to-days
-       (org-read-date nil t start-date))
-       )
-       (calendar-gregorian-from-absolute
-       (time-to-days
-       (org-read-date nil t end-date))) text)
-	   )))))
+      (let ((date-string  (match-string 1 dotime))
+	     (extra (cfw:org-tp text 'extra)))
+	(if (string-match "(\\([0-9]+\\)/\\([0-9]+\\)): " extra)
+	  (let* ((cur-day (string-to-number
+			    (match-string 1 extra)))
+		  (total-days (string-to-number
+				(match-string 2 extra)))
+                  (start-date (org-read-date nil t date-string))
+		  (end-date (time-add
+                              start-date
+			      (seconds-to-time (* 3600 24 (- total-days 1))))))
+	    (unless (= cur-day total-days)
+              (list (calendar-gregorian-from-absolute (time-to-days start-date))
+		(calendar-gregorian-from-absolute (time-to-days end-date)) text)))
+	  )))))
 
 (defun cfw:org-schedule-period-to-calendar (begin end)
   "[internal] Return calfw calendar items between BEGIN and END
@@ -469,6 +472,7 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
   (make-cfw:source
    :name "org-agenda"
    :color (or color cfw:org-face-agenda-item-foreground-color)
+   :opt-period-face '(:slant italic)
    :data 'cfw:org-schedule-period-to-calendar))
 
 (defun cfw:open-org-calendar ()
@@ -493,6 +497,7 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
          (m (calendar-extract-month mdy))
          (d (calendar-extract-day   mdy))
          (y (calendar-extract-year  mdy)))
+    ;; FIXME: Delete if no use is found
     ;; exec org-remember here?
     ))
 
