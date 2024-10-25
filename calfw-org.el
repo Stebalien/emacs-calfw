@@ -102,14 +102,15 @@ For example,
       (when (buffer-live-p org-agenda-buffer)
         org-agenda-buffer))
     (org-compile-prefix-format nil)
-    (cl-loop for date in (cfw:enumerate-days begin end) append
-          (cl-loop for file in (or cfw:org-icalendars (org-agenda-files nil 'ifmode))
-                append
-                (progn
-                  (org-check-agenda-file file)
-                  (apply 'org-agenda-get-day-entries
-                         file date
-                         cfw:org-agenda-schedule-args))))))
+    (delete-dups
+        (cl-loop for date in (cfw:enumerate-days begin end) append
+            (cl-loop for file in (or cfw:org-icalendars (org-agenda-files nil 'ifmode))
+                    append
+                    (progn
+                    (org-check-agenda-file file)
+                    (apply 'org-agenda-get-day-entries
+                            file date
+                            cfw:org-agenda-schedule-args)))))))
 
 (defun cfw:org-onclick ()
   "Jump to the clicked org item."
