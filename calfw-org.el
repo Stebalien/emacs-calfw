@@ -480,7 +480,8 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
   "Open an org schedule calendar in the new buffer."
   (interactive)
   (save-excursion
-    (let* ((source1 (cfw:org-create-source))
+    (let* ((org-deadline-warning-days 1)
+           (source1 (cfw:org-create-source))
            (curr-keymap (if cfw:org-overwrite-default-keybinding cfw:org-custom-map cfw:org-schedule-map))
            (cp (cfw:create-calendar-component-buffer
                 :view cfw:org-calendar-default-view
