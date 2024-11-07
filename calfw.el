@@ -1179,7 +1179,7 @@ contents list."
   (let* ((prv (cfw:contents-get-internal date contents))
          (lst (if (listp content) (copy-sequence content) (list content))))
     (if prv
-        (setcdr prv (append (cdr prv) lst))
+        (setcdr prv (seq-uniq (append (cdr prv) lst)))
       (push (cons date lst) contents)))
   contents)
 

@@ -100,28 +100,27 @@ For example,
         (org-agenda-prefix-format " ")
         (span 'day))
     (setq org-agenda-buffer
-      (when (buffer-live-p org-agenda-buffer)
-        org-agenda-buffer))
+          (when (buffer-live-p org-agenda-buffer)
+            org-agenda-buffer))
     (org-compile-prefix-format nil)
-    (delete-dups
-        (cl-loop for date in (cfw:enumerate-days begin end) append
-            (cl-loop for file in (or cfw:org-icalendars (org-agenda-files nil 'ifmode))
-                    append
-                    (progn
-                    (org-check-agenda-file file)
-                    (apply 'org-agenda-get-day-entries
-                            file date
-                            cfw:org-agenda-schedule-args)))))))
+    (cl-loop for date in (cfw:enumerate-days begin end) append
+             (cl-loop for file in (or cfw:org-icalendars (org-agenda-files nil 'ifmode))
+                      append
+                      (progn
+                        (org-check-agenda-file file)
+                        (apply 'org-agenda-get-day-entries
+                               file date
+                               cfw:org-agenda-schedule-args))))))
 
 (defun cfw:org-onclick ()
   "Jump to the clicked org item."
   (interactive)
   (let (
-    (marker (get-text-property (point) 'org-marker))
-    (link   (get-text-property (point) 'org-link))
-    (file   (get-text-property (point) 'cfw:org-file))
-    (beg    (get-text-property (point) 'cfw:org-h-beg))
-    (loc    (get-text-property (point) 'cfw:org-loc)))
+        (marker (get-text-property (point) 'org-marker))
+        (link   (get-text-property (point) 'org-link))
+        (file   (get-text-property (point) 'cfw:org-file))
+        (beg    (get-text-property (point) 'cfw:org-h-beg))
+        (loc    (get-text-property (point) 'cfw:org-loc)))
     (when link
       (org-link-open-from-string link))
     (when (and marker (marker-buffer marker))
@@ -141,7 +140,7 @@ For example,
   (interactive)
   (let ((loc    (get-text-property (point) 'cfw:org-loc)))
     (when loc
-    ;; FIXME: Figure out how to use OpenStreet instead
+      ;; FIXME: Figure out how to use OpenStreet instead
       (google-maps loc))))
 
 (defun cfw:org-clean-exit ()
@@ -166,8 +165,8 @@ For example,
     ;; (when (string-match cfw:org-todo-keywords-regexp item) ; dynamic bind
     ;;   (setq item (replace-match "" nil nil item)))
     (if tags
-      (when (string-match (concat "[\t ]*:+" (mapconcat 'identity tags ":+") ":+[\t ]*$") item)
-        (setq item (replace-match "" nil nil item))))
+        (when (string-match (concat "[\t ]*:+" (mapconcat 'identity tags ":+") ":+[\t ]*$") item)
+          (setq item (replace-match "" nil nil item))))
     (when (string-match "[0-9]\\{2\\}:[0-9]\\{2\\}\\(-[0-9]\\{2\\}:[0-9]\\{2\\}\\)?[\t ]+" item)
       (setq item (replace-match "" nil nil item)))
     (when (string-match "^ +" item)
@@ -195,29 +194,29 @@ For example,
     (when (string-match (concat "^" org-deadline-string ".*") extra)
       (add-text-properties 0 (length text) (list 'face (org-agenda-deadline-face 1.0)) text))
     (if org-todo-keywords-for-agenda
-      (when (string-match (concat "^[\t ]*\\<\\(" (mapconcat 'identity org-todo-keywords-for-agenda "\\|") "\\)\\>") text)
-        (add-text-properties (match-beginning 1) (match-end 1) (list 'face (org-get-todo-face (match-string 1 text))) text)
-        (when have-done
-          (add-text-properties (match-end 1) (length text) (list 'face 'org-done) text))))
+        (when (string-match (concat "^[\t ]*\\<\\(" (mapconcat 'identity org-todo-keywords-for-agenda "\\|") "\\)\\>") text)
+          (add-text-properties (match-beginning 1) (match-end 1) (list 'face (org-get-todo-face (match-string 1 text))) text)
+          (when have-done
+            (add-text-properties (match-end 1) (length text) (list 'face 'org-done) text))))
     ;;; ------------------------------------------------------------------------
     ;;; act for org link
     ;;; ------------------------------------------------------------------------
     (setq text (replace-regexp-in-string "%[0-9A-F]\\{2\\}" " " text))
     (if (string-match org-link-bracket-re text)
-      (let* ((desc (if (match-end 3) (match-string-no-properties 3 text)))
-             (link (org-link-unescape (org-match-string-no-properties 1 text)))
-             (help (concat "LINK: " link))
-             (link-props (list
+        (let* ((desc (if (match-end 3) (match-string-no-properties 3 text)))
+               (link (org-link-unescape (org-match-string-no-properties 1 text)))
+               (help (concat "LINK: " link))
+               (link-props (list
                           'face 'org-link
                           'mouse-face 'highlight
                           'help-echo help
                           'org-link link)))
-        (if desc
-            (progn
-              (setq desc (apply 'propertize desc link-props))
-              (setq text (replace-match desc nil nil text)))
-          (setq link (apply 'propertize link link-props))
-          (setq text (replace-match link nil nil text)))))
+          (if desc
+              (progn
+                (setq desc (apply 'propertize desc link-props))
+                (setq text (replace-match desc nil nil text)))
+            (setq link (apply 'propertize link link-props))
+            (setq text (replace-match link nil nil text)))))
     (when time-str
       (when have-done
         (add-text-properties 0 (length time-str) (list 'face 'org-done) time-str))
@@ -247,21 +246,21 @@ If this function splits into a list of string, the calfw displays those string i
 If TEXT does not have a range, return nil."
   (let* ((dotime (cfw:org-tp text 'dotime)))
     (and (stringp dotime) (string-match org-ts-regexp dotime)
-      (let ((date-string  (match-string 1 dotime))
-	     (extra (cfw:org-tp text 'extra)))
-	(if (string-match "(\\([0-9]+\\)/\\([0-9]+\\)): " extra)
-	  (let* ((cur-day (string-to-number
-			    (match-string 1 extra)))
-		  (total-days (string-to-number
-				(match-string 2 extra)))
-                  (start-date (org-read-date nil t date-string))
-		  (end-date (time-add
-                              start-date
-			      (seconds-to-time (* 3600 24 (- total-days 1))))))
-	    (unless (= cur-day total-days)
-              (list (calendar-gregorian-from-absolute (time-to-days start-date))
-		(calendar-gregorian-from-absolute (time-to-days end-date)) text)))
-	  )))))
+         (let ((date-string  (match-string 1 dotime))
+	           (extra (cfw:org-tp text 'extra)))
+	       (if (string-match "(\\([0-9]+\\)/\\([0-9]+\\)): " extra)
+	           (let* ((cur-day (string-to-number
+			                    (match-string 1 extra)))
+		              (total-days (string-to-number
+				                   (match-string 2 extra)))
+                      (start-date (org-read-date nil t date-string))
+		              (end-date (time-add
+                                 start-date
+			                     (seconds-to-time (* 3600 24 (- total-days 1))))))
+	             (unless (= cur-day total-days)
+                   (list (calendar-gregorian-from-absolute (time-to-days start-date))
+		                 (calendar-gregorian-from-absolute (time-to-days end-date)) text)))
+	         )))))
 
 (defun cfw:org-schedule-period-to-calendar (begin end)
   "[internal] Return calfw calendar items between BEGIN and END
@@ -277,11 +276,11 @@ from the org schedule data."
    (unless (member range periods)
      (push range periods))
    else do
-   ; dotime is not present if this event was already added as a timerange
+                                        ; dotime is not present if this event was already added as a timerange
    (if (cfw:org-tp i 'dotime)
        (setq contents (cfw:contents-add
-		       (cfw:org-normalize-date date)
-		       line contents)))
+		               (cfw:org-normalize-date date)
+		               line contents)))
    finally return (nconc contents (list (cons 'periods periods)))))
 
 (defun cfw:org-schedule-sorter (text1 text2)
@@ -312,17 +311,17 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
 
 (defun cfw:org-format-title (file h-obj t-obj h-beg loc)
   (propertize
-  (concat
-   (when  (org-element-property :hour-start t-obj)
-     (format "%02i:%02i "
+   (concat
+    (when  (org-element-property :hour-start t-obj)
+      (format "%02i:%02i "
              (org-element-property :hour-start t-obj)
              (org-element-property :minute-start t-obj)))
-   (org-element-property :title h-obj))
-  'keymap cfw:org-text-keymap
-  'display nil
-  'cfw:org-file file
-  'cfw:org-h-beg h-beg
-  'cfw:org-loc loc))
+    (org-element-property :title h-obj))
+   'keymap cfw:org-text-keymap
+   'display nil
+   'cfw:org-file file
+   'cfw:org-h-beg h-beg
+   'cfw:org-loc loc))
 
 (defun cfw:org-format-date (t-obj lst)
   (mapcar
@@ -364,54 +363,54 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
                            (lambda (hl) (org-element-property :begin hl) ))
                        ,@(org-element-map (org-element-map elem-obj 'headline
                                             (lambda (hl)
-                                 (org-element-property :deadline hl) ) ) 'timestamp
+                                              (org-element-property :deadline hl) ) ) 'timestamp
                            (lambda (hl) (org-element-property :begin hl) ))
                        ,@(org-element-map (org-element-map elem-obj 'headline
                                             (lambda (hl)
                                               (org-element-property :scheduled hl) ) ) 'timestamp
                            (lambda (hl) (org-element-property :begin hl) )))))
         (cl-loop for pos in pos-lst
-              do (goto-char pos)
-              for t-obj =  (org-element-timestamp-parser)
-              for h-obj = (progn
-                            (org-back-to-heading t)
-                            (org-element-headline-parser (point-max) t))
-              for h-beg  = (point)
-              for event = (cfw:org-convert-event file h-obj t-obj h-beg)
-              for ts-type = (org-element-property :type t-obj)
-              if (eq 'active-range ts-type)
-              collect event into periods
-              else if (eq 'active ts-type)
-              collect event into contents
-              ;; else do
-              ;; (message "calfw-org: Cannot handle event")
-              finally
-              (kill-buffer (get-file-buffer file))
-              (cl-return `((periods ,periods) ,@contents)))))))
+                 do (goto-char pos)
+                 for t-obj =  (org-element-timestamp-parser)
+                 for h-obj = (progn
+                               (org-back-to-heading t)
+                               (org-element-headline-parser (point-max) t))
+                 for h-beg  = (point)
+                 for event = (cfw:org-convert-event file h-obj t-obj h-beg)
+                 for ts-type = (org-element-property :type t-obj)
+                 if (eq 'active-range ts-type)
+                 collect event into periods
+                 else if (eq 'active ts-type)
+                 collect event into contents
+                 ;; else do
+                 ;; (message "calfw-org: Cannot handle event")
+                 finally
+                 (kill-buffer (get-file-buffer file))
+                 (cl-return `((periods ,periods) ,@contents)))))))
 
 (defun cfw:org-to-calendar (file begin end)
   (cl-loop for event in (cfw:org-convert-org-to-calfw file)
-        if (and (listp event)
-                (equal 'periods (car event)))
-        collect
-        (cons
-         'periods
-         (cl-loop for evt in (cadr event)
-               if (and
-                   (cfw:date-less-equal-p begin (cfw:event-end-date evt))
-                   (cfw:date-less-equal-p (cfw:event-start-date evt) end))
-               collect evt))
-        else if (cfw:date-between begin end (cfw:event-start-date event))
-        collect event))
+           if (and (listp event)
+                   (equal 'periods (car event)))
+           collect
+           (cons
+            'periods
+            (cl-loop for evt in (cadr event)
+                     if (and
+                         (cfw:date-less-equal-p begin (cfw:event-end-date evt))
+                         (cfw:date-less-equal-p (cfw:event-start-date evt) end))
+                     collect evt))
+           else if (cfw:date-between begin end (cfw:event-start-date event))
+           collect event))
 
 (defun cfw:org-create-file-source (name file color)
   "Create org-element based source. "
   (lexical-let ((file file))
-    (make-cfw:source
-     :name (concat "Org:" name)
-     :color color
-     :data (lambda (begin end)
-             (cfw:org-to-calendar file begin end)))))
+               (make-cfw:source
+                :name (concat "Org:" name)
+                :color color
+                :data (lambda (begin end)
+                        (cfw:org-to-calendar file begin end)))))
 
 (defun cfw:org-capture-day ()
   (with-current-buffer  (get-buffer-create cfw:calendar-buffer-name)
@@ -425,8 +424,8 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
               ">"))))
 
 (when cfw:org-capture-template
-(setq org-capture-templates
-      (append org-capture-templates (list cfw:org-capture-template))))
+  (setq org-capture-templates
+        (append org-capture-templates (list cfw:org-capture-template))))
 
 (defun cfw:org-capture ()
   "Open org-agenda buffer on the selected date."
@@ -443,7 +442,7 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
       (org-agenda-list nil (calendar-absolute-from-gregorian date) 'day))))
 
 (define-key
-  cfw:calendar-mode-map "c" 'cfw:org-capture)
+ cfw:calendar-mode-map "c" 'cfw:org-capture)
 
 (defvar cfw:org-schedule-map
   (cfw:define-keymap
