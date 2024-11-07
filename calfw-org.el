@@ -96,7 +96,7 @@ For example,
 
 (defun cfw:org-collect-schedules-period (begin end)
   "[internal] Return org schedule items between BEGIN and END."
-  (let ((org-deadline-warning-days 1)
+  (let ((org-deadline-warning-days 0)
         (org-agenda-prefix-format " ")
         (span 'day))
     (setq org-agenda-buffer
