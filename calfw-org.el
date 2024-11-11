@@ -283,17 +283,27 @@ from the org schedule data."
 		               line contents)))
    finally return (nconc contents (list (cons 'periods periods)))))
 
+;;  TODO: sort by TODO state and then TIME, which should be polished
 (defun cfw:org-schedule-sorter (text1 text2)
   "[internal] Sorting algorithm for org schedule items.
 TEXT1 < TEXT2."
   (condition-case err
-      (let ((time1 (cfw:org-tp text1 'time-of-day))
-            (time2 (cfw:org-tp text2 'time-of-day)))
-        (cond
-         ((and time1 time2) (< time1 time2))
-         (time1 t)   ; time object is moved to upper
-         (time2 nil) ;
-         (t (string-lessp text1 text2))))
+      (let* ((time1 (cfw:org-tp text1 'time-of-day))
+             (time2 (cfw:org-tp text2 'time-of-day))
+             (todo1 (cfw:org-tp text1 'todo-state))
+             (todo2 (cfw:org-tp text2 'todo-state))
+             (todo1-done (member todo1 org-done-keywords-for-agenda))
+             (todo2-done (member todo2 org-done-keywords-for-agenda)))
+        (if (and (or todo1 todo2)
+                 (xor todo1-done todo2-done))
+            (cond
+             (todo1-done nil)
+             (todo2-done t))
+          (cond
+           ((and time1 time2) (< time1 time2))
+           (time1 t)   ; time object is moved to upper
+           (time2 nil) ;
+           (t (string-lessp text1 text2)))))
     (error (string-lessp text1 text2))))
 
 (defun cfw:org-schedule-sorter2 (text1 text2)
