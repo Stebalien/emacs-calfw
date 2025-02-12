@@ -1509,7 +1509,8 @@ PREV-CMD and NEXT-CMD are the moving view command, such as `cfw:navi-previous(ne
 
 (defun cfw:render-periods (date week-day periods-stack cell-width)
   "[internal] This function translates PERIOD-STACK to display content on the DATE."
-    (setq org-entries-defined-colors '( "cyan" "MediumVioletRed" "orange" "green" "blue" "tomato" "SeaGreen2" "pink" "salmon" "royal blue" "yellow" "violet" "PaleGreen" "DarkOrange" "light sea green" "SpringGreen" "white" "DarkMagenta" "goldenrod" "peru" ))
+  ;;  FIXME: not use the hard-code way.
+    (setq org-entries-defined-colors '("#F5F5DC" "#FAF0E6" "#FFF8DC" "#FDF5E6" "#F0E68C" "#E6E6FA" "#FFEBCD" "#F5F5F5" "#FAFAD2" "#E0EEE0" "#1E1E1E" "#2D2D2D" "#3A3A3A" "#4A4A4A" "#2E3440" "#3B4252" "#4C566A" "#282C34" "#1F1F1F" "#333333"))
     (setq max-length-text 50.0)
     (cl-loop with prev-row = -1
         for (row (begin end content props)) in (sort periods-stack
