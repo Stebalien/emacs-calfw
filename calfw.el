@@ -1509,9 +1509,6 @@ PREV-CMD and NEXT-CMD are the moving view command, such as `cfw:navi-previous(ne
 
 (defun cfw:render-periods (date week-day periods-stack cell-width)
   "[internal] This function translates PERIOD-STACK to display content on the DATE."
-  ;;  FIXME: not use the hard-code way.
-    (setq org-entries-defined-colors '("#F5F5DC" "#FAF0E6" "#FFF8DC" "#FDF5E6" "#F0E68C" "#E6E6FA" "#FFEBCD" "#F5F5F5" "#FAFAD2" "#E0EEE0" "#1E1E1E" "#2D2D2D" "#3A3A3A" "#4A4A4A" "#2E3440" "#3B4252" "#4C566A" "#282C34" "#1F1F1F" "#333333"))
-    (setq max-length-text 50.0)
     (cl-loop with prev-row = -1
         for (row (begin end content props)) in (sort periods-stack
                                                      (lambda (a b)
@@ -1521,21 +1518,15 @@ PREV-CMD and NEXT-CMD are the moving view command, such as `cfw:navi-previous(ne
 
         for beginp = (equal date begin)
         for endp   = (equal date end)
-        for inwidth  = (- cell-width (if beginp 1 0) (if endp 1 0)) ; One less character to use if starting/finishing
+        for inwidth  = (- cell-width (if beginp 1 0) (if endp 1 0))
         for title  = (cfw:render-periods-title
                       date week-day begin end content cell-width inwidth)
-        ;; color
-        for length-text = (string-bytes content)
-        for length-defined-colors = (length org-entries-defined-colors)
-        for scaled-color-id = (ceiling (* (/ length-text max-length-text) length-defined-colors))
-        for color = (nth scaled-color-id org-entries-defined-colors)
-
         collect
         (apply 'propertize
                (concat (when beginp cfw:fstring-period-start)
                        (cfw:render-left inwidth title ?-)
                        (when endp cfw:fstring-period-end))
-               'face (cfw:render-get-face-period content 'cfw:face-periods color)
+               'face (cfw:render-get-face-period content 'cfw:face-periods)
                'font-lock-face (cfw:render-get-face-period content 'cfw:face-periods)
                'cfw:period t
                props)))
