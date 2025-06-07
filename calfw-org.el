@@ -118,13 +118,10 @@ For example,
 (defun cfw:org-onclick ()
   "Jump to the clicked org item."
   (interactive)
-  (let (
-        (marker (get-text-property (point) 'org-marker))
+  (let ((marker (get-text-property (point) 'org-marker))
         (link   (get-text-property (point) 'org-link))
         (file   (get-text-property (point) 'cfw:org-file))
-        (beg    (get-text-property (point) 'cfw:org-h-beg))
-        ;; (loc    (get-text-property (point) 'cfw:org-loc))
-        )
+        (beg    (get-text-property (point) 'cfw:org-h-beg)))
     (when link
       (org-link-open-from-string link))
     (when (and marker (marker-buffer marker))
@@ -134,16 +131,17 @@ For example,
       (goto-char (marker-position marker))
       (when (eq major-mode 'org-mode)
         (org-reveal)))
-    (when beg
+    (when file
       (find-file file)
-      (goto-char beg)
-      (org-cycle))))
+      (when beg
+        (goto-char beg)
+        (org-cycle)))))
 
 (defun cfw:org-jump-map ()
   "Jump to the clicked org item."
   (interactive)
   (when (fboundp 'google-maps) ;; TODO: Not sure where this function is from!
-    (let ((loc    (get-text-property (point) 'cfw:org-loc)))
+    (let ((loc (get-text-property (point) 'cfw:org-loc)))
       (when loc
         (google-maps loc)))))
 
