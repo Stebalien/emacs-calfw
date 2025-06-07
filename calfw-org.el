@@ -102,14 +102,18 @@ For example,
           (when (buffer-live-p org-agenda-buffer)
             org-agenda-buffer))
     (org-compile-prefix-format nil)
-    (cl-loop for date in (cfw:enumerate-days begin end) append
-             (cl-loop for file in (or cfw:org-icalendars (org-agenda-files nil 'ifmode))
-                      append
-                      (progn
-                        (org-check-agenda-file file)
-                        (apply 'org-agenda-get-day-entries
-                               file date
-                               cfw:org-agenda-schedule-args))))))
+    (let ((files (or cfw:org-icalendars (org-agenda-files nil 'ifmode)))
+          org-agenda-new-buffers)
+      (org-agenda-prepare-buffers files)
+      (unwind-protect
+          (cl-loop for date in (cfw:enumerate-days begin end) append
+                   (cl-loop for file in files
+                            append
+                            (progn
+                              (apply #'org-agenda-get-day-entries
+                                     file date
+                                     cfw:org-agenda-schedule-args))))
+        (org-release-buffers org-agenda-new-buffers)))))
 
 (defun cfw:org-onclick ()
   "Jump to the clicked org item."
@@ -162,8 +166,8 @@ For example,
 (defun cfw:org-extract-summary (org-item)
   "[internal] Remove some strings."
   (let* ((item org-item) (tags (cfw:org-tp item 'tags)))
-    ;; (when (string-match cfw:org-todo-keywords-regexp item) ; dynamic bind
-    ;;   (setq item (replace-match "" nil nil item)))
+    (when (string-match (regexp-opt org-todo-keywords-for-agenda) item)
+      (setq item (replace-match "" nil nil item)))
     (if tags
         (when (string-match (concat "[\t ]*:+" (mapconcat 'identity tags ":+") ":+[\t ]*$") item)
           (setq item (replace-match "" nil nil item))))
