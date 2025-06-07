@@ -115,12 +115,12 @@ For example,
   "Jump to the clicked org item."
   (interactive)
   (let (
-    (marker (get-text-property (point) 'org-marker))
-    (link   (get-text-property (point) 'org-link))
-    (file   (get-text-property (point) 'cfw:org-file))
-    (beg    (get-text-property (point) 'cfw:org-h-beg))
-    ;; (loc    (get-text-property (point) 'cfw:org-loc))
-    )
+        (marker (get-text-property (point) 'org-marker))
+        (link   (get-text-property (point) 'org-link))
+        (file   (get-text-property (point) 'cfw:org-file))
+        (beg    (get-text-property (point) 'cfw:org-h-beg))
+        ;; (loc    (get-text-property (point) 'cfw:org-loc))
+        )
     (when link
       (org-link-open-from-string link))
     (when (and marker (marker-buffer marker))
@@ -207,10 +207,10 @@ For example,
                (link (org-link-unescape (match-string-no-properties 1 text)))
                (help (concat "LINK: " link))
                (link-props (list
-                          'face 'org-link
-                          'mouse-face 'highlight
-                          'help-echo help
-                          'org-link link)))
+                            'face 'org-link
+                            'mouse-face 'highlight
+                            'help-echo help
+                            'org-link link)))
           (if desc
               (progn
                 (setq desc (apply 'propertize desc link-props))
@@ -280,8 +280,8 @@ from the org schedule data."
                                         ; dotime is not present if this event was already added as a timerange
    (if (cfw:org-tp i 'dotime)
        (setq contents (cfw:contents-add
-		               (cfw:org-normalize-date date)
-		               line contents)))
+		       (cfw:org-normalize-date date)
+		       line contents)))
    finally return (nconc contents (list (cons 'periods periods)))))
 
 ;;  TODO: sort by TODO state and then TIME, which should be polished
@@ -325,8 +325,8 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
    (concat
     (when  (org-element-property :hour-start t-obj)
       (format "%02i:%02i "
-             (org-element-property :hour-start t-obj)
-             (org-element-property :minute-start t-obj)))
+              (org-element-property :hour-start t-obj)
+              (org-element-property :minute-start t-obj)))
     (org-element-property :title h-obj))
    'keymap cfw:org-text-keymap
    'display nil
@@ -452,7 +452,7 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
       (org-agenda-list nil (calendar-absolute-from-gregorian date) 'day))))
 
 (define-key
- cfw:calendar-mode-map "c" 'cfw:org-capture)
+  cfw:calendar-mode-map "c" 'cfw:org-capture)
 
 (defvar cfw:org-schedule-map
   (cfw:define-keymap

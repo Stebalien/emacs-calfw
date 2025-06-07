@@ -95,16 +95,16 @@ from the diary schedule data."
         non-periods
         periods)
     (cl-loop for i in all
-          ;;for date = (car i)
-          for title = (nth 1 i)
-          for date-spec = (nth 2 i)
-          ;;for dmarker = (nth 3 i)
-          for pspec = (cons date-spec title)
-          do
-          (if (string-match "%%(diary-block" date-spec)
-              (unless (member pspec periods)
-                (push pspec periods))
-            (push i non-periods)))
+             ;;for date = (car i)
+             for title = (nth 1 i)
+             for date-spec = (nth 2 i)
+             ;;for dmarker = (nth 3 i)
+             for pspec = (cons date-spec title)
+             do
+             (if (string-match "%%(diary-block" date-spec)
+                 (unless (member pspec periods)
+                   (push pspec periods))
+               (push i non-periods)))
     (append
      (cl-loop
       for (date string . rest) in non-periods

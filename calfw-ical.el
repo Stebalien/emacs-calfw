@@ -242,9 +242,9 @@ have not been supported yet."
     (unless data
       (setq data (let ((cal-list
                         (cfw:ical-with-buffer url
-                          (cfw:ical-normalize-buffer)
-                          (cfw:ical-convert-ical-to-calfw
-                           (icalendar--read-element nil nil)))))
+                                              (cfw:ical-normalize-buffer)
+                                              (cfw:ical-convert-ical-to-calfw
+                                               (icalendar--read-element nil nil)))))
                    (cons url cal-list)))
       (push data cfw:ical-data-cache))
     (cdr data)))
@@ -257,10 +257,10 @@ have not been supported yet."
            (cons
             'periods
             (cl-loop for evt in (cadr event)
-                  if (and
-                      (cfw:date-less-equal-p begin (cfw:event-end-date evt))
-                      (cfw:date-less-equal-p (cfw:event-start-date evt) end))
-                  collect evt))
+                     if (and
+                         (cfw:date-less-equal-p begin (cfw:event-end-date evt))
+                         (cfw:date-less-equal-p (cfw:event-start-date evt) end))
+                     collect evt))
            else if (cfw:date-between begin end (cfw:event-start-date event))
            collect event))
 
