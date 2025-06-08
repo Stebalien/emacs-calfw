@@ -94,10 +94,14 @@ For example,
 (defvar cfw:org-face-agenda-item-foreground-color "Seagreen4"
   "Variable for org agenda item foreground color.")
 
+(defvar recentf-exclude)
 (defun cfw:org-collect-schedules-period (begin end)
   "[internal] Return org schedule items between BEGIN and END."
   (let ((org-deadline-warning-days 0)
-        (org-agenda-prefix-format " "))
+        (org-agenda-prefix-format " ")
+        (recentf-exclude '(always))
+        (org-agenda-inhibit-startup t)
+        org-agenda-new-buffers)
     (setq org-agenda-buffer
           (when (buffer-live-p org-agenda-buffer)
             org-agenda-buffer))
