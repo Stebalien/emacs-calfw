@@ -84,7 +84,6 @@ For example,
     g   | cfw:refresh-calendar-buffer
     j   | cfw:org-goto-date
     k   | org-capture
-    x   | cfw:org-clean-exit
     d   | cfw:change-view-day
     v d | cfw:change-view-day
     v w | cfw:change-view-week
@@ -148,13 +147,6 @@ For example,
     (let ((loc (get-text-property (point) 'cfw:org-loc)))
       (when loc
         (google-maps loc)))))
-
-(defun cfw:org-clean-exit ()
-  "Close buffers opened by calfw-org before closing Calendar Framework."
-  (interactive)
-  (org-release-buffers org-agenda-new-buffers)
-  (setq org-agenda-new-buffers nil)
-  (bury-buffer))
 
 (defvar cfw:org-text-keymap
   (let ((map (make-sparse-keymap)))
@@ -479,7 +471,6 @@ TEXT1 < TEXT2. This function makes no-time items in front of timed-items."
      ("v d" . cfw:change-view-day)
      ("v w" . cfw:change-view-week)
      ("v m" . cfw:change-view-month)
-     ("x"   . cfw:org-clean-exit)
      ("SPC" . cfw:org-open-agenda-day)
      ))
   "Key map for the calendar buffer.")
