@@ -1,5 +1,9 @@
 # Calfw - A calendar framework for Emacs
 
+## About this fork
+
+This fork is a merge of [haji-ali's fork](https://github.com/haji-ali/emacs-calfw), and [theFool32's fork](https://github.com/theFool32/emacs-calfw).
+
 ## What is calfw?
 
 This program displays a calendar view in the Emacs buffer.
@@ -38,31 +42,12 @@ annotations like the moon phases.
 This program gets the holidays using the function
 `calendar-holiday-list`. See the document for the holidays.el and the Info text.
 
-## Fork changelog
-
-This fork has the following change
-- Applied three external pull requests (See Pull requests for more info)
-- Implement a `noerror` mode for `cp-get-compoonent`
-- Removed highlighting of selected date, preferring more subtle indication.
-- Showing calendars on separate lines and allowing showing/hiding of them
-- Removed everything to do with selecting a date, preferring instead to use
-  the point to indicate selection.
-- Changed coloring of background/foreground.
-- Removed M-v and C-v binding.
-- Cleaned up some of the code and using more standard functions, though much
-  more can be done (WIP).
-
-I use this package with
-[calfw-blocks](https://github.com/haji-ali/calfw-blocks) and
-[maccalfw](https://github.com/haji-ali/maccalfw/) and I am only testing the
-block views on a regular basis.
-
 ## Key bindings
 
 In the calendar buffer and region, you can use following key bindings:
 
-| Navigation          |                                              | 
-|---------------------|----------------------------------------------| 
+| Navigation          |                                              |
+|---------------------|----------------------------------------------|
 | [left], b, h        | Previous day                                 |
 | [right], f, l       | Next day                                     |
 | [up], p, k          | Previous week                                |
@@ -164,7 +149,6 @@ Then, following key bindings are overwritten:
 |   g   | Refresh data and re-draw contents (cfw:refresh-calendar-buffer)
 |   j   | Goto the specified date (cfw:org-goto-date)
 |   k   | org-capture
-|   x   | Close calfw and other buffers opened by calfw-org (cfw:org-clean-exit)
 |   d   | Day view (cfw:change-view-day)
 |   v d | Day view (cfw:change-view-day)
 |   v w | 1 Week view (cfw:change-view-week)
@@ -229,7 +213,7 @@ Here is the sample code:
     (cfw:cal-create-source "Orange") ; diary source
     (cfw:ical-create-source "Moon" "~/moon.ics" "Gray")  ; ICS source1
     (cfw:ical-create-source "gcal" "https://..../basic.ics" "IndianRed") ; google calendar ICS
-   ))) 
+   )))
 ```
 
 The function `cfw:open-calendar-buffer` receives schedules sources via
@@ -321,7 +305,7 @@ Grid setting example:
       cfw:fchar-top-junction ?┯
       cfw:fchar-top-left-corner ?┏
       cfw:fchar-top-right-corner ?┓)
-      
+
 ;; Another unicode chars
 (setq cfw:fchar-junction ?╬
       cfw:fchar-vertical-line ?║
@@ -382,7 +366,7 @@ This section explains what objects the function-slot `cfw:source-data` should re
 The function-slot `cfw:source-data` receives two arguments, start and
 end date of the query period, and returns a list of instances of `cfw:event` struct.
 
-Here is a simple example. 
+Here is a simple example.
 
 `cfw:source-data example1:`
 
@@ -398,7 +382,7 @@ Here is a simple example.
 (cfw:open-calendar-buffer
   :date (cfw:date 1 1 2011)
   :contents-sources
-   (list 
+   (list
      (make-cfw:source
       :name "test1" :data 'sample-data1)))
 ```
@@ -430,11 +414,11 @@ Period items are little different. One period item is specified by
           :start-date (cfw:date 1 11 2011)
           :end-date   (cfw:date 1 12 2011)
           :description "Next item description"))))
-  
+
 (cfw:open-calendar-buffer
   :date (cfw:date 1 1 2011)
   :contents-sources
-   (list 
+   (list
      (make-cfw:source
       :name "test2" :data 'sample-data2)))
 ```
@@ -510,7 +494,7 @@ The function-slot `cfw:source-data` receives two arguments, start and
 end date of the query period, and returns an alist that consists of
 ([date] . ([item1] [item2] ... )).
 
-Here is a simple example. 
+Here is a simple example.
 
 `cfw:source-data example1:`
 
@@ -525,7 +509,7 @@ Here is a simple example.
 (cfw:open-calendar-buffer
   :date (cfw:date 1 1 2011)
   :contents-sources
-   (list 
+   (list
      (make-cfw:source
       :name "test1" :data 'sample-data1)))
 ```
@@ -550,7 +534,7 @@ alist collects them as a list, like the following code.
 (cfw:open-calendar-buffer
   :date (cfw:date 1 1 2011)
   :contents-sources
-   (list 
+   (list
      (make-cfw:source
       :name "test2" :data 'sample-data2)))
 ```
