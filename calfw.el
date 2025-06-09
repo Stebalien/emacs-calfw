@@ -2420,8 +2420,8 @@ calendar view."
      ;; Vi style
      ("l" . cfw:navi-next-day-command)
      ("h" . cfw:navi-previous-day-command)
-     ("j" . cfw:navi-previous-week-command)
-     ("k" . cfw:navi-next-week-command)
+     ("k" . cfw:navi-previous-week-command)
+     ("j" . cfw:navi-next-week-command)
      ("^" . cfw:navi-goto-week-begin-command)
      ("$" . cfw:navi-goto-week-end-command)
 
